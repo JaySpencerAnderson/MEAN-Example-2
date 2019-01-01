@@ -1,0 +1,71 @@
+<html>
+<head><title>Karplus Strong Signal Synthesis</title>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1"> 
+</head>
+<body>
+<canvas id="KarplusStrong" width="500" height="500" style="border:1px solid #000000;"></canvas>
+<script>
+	var canvas = document.getElementById("KarplusStrong");
+	var ctx = canvas.getContext("2d");
+	var scale=500;
+	var series=[];
+
+/* Random init */
+	function init(){
+		for(var i=0;i<scale;i++){
+			series.push(Math.random());
+		}
+	}
+/* Deterministic Init */
+	function dinit(){
+		var count=1;
+		var value=0;
+		var d=0;
+		for(var i=0;i<scale;i++){
+			series.push(value);
+			d++;
+			if(d == count){
+				count++;
+				value^=1;
+				d=0;
+			}
+		}
+	}
+	function clear(){
+		ctx.fillStyle = "#0F0000";
+		ctx.fillRect(0,0,scale,scale);
+	}
+	function graph(){
+		var mn=1,mx=0;
+		ctx.fillStyle = "#FFFFFF";
+		for(var i=0;i<series.length;i++){
+			ctx.fillRect(i,series[i]*scale,1,1);
+			mn=mn>series[i]?series[i]:mn;
+			mx=mx<series[i]?series[i]:mx;
+		}
+		return mx-mn;
+	}
+	function average(){
+		var before=series[series.length-1];
+		for(var i=0;i<series.length;i++){
+			here=series[i];
+			series[i]=(before+series[i])*0.5;
+			before=here;
+		}
+	}
+	function combined(){
+		average();
+		clear();
+		return graph();
+	}
+	var check = function(){
+		r=combined();
+		if(r > 0.05){
+			setTimeout(check,1);
+		}
+	}
+	init();
+	check();
+</script>
+</body>
+</html>

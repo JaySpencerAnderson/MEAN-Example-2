@@ -1,0 +1,75 @@
+<html>
+<head><title>Plus Fractal</title>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1"> 
+</head>
+<body>
+<canvas id="Plus" width="500" height="500" style="border:1px solid #000000;"></canvas>
+<script>
+	var canvas = document.getElementById("Plus");
+	var ctx = canvas.getContext("2d");
+	var width=500;
+	var point=[];
+	var movex,movey,scale,offset;
+	var bf=0.85;
+	var sc=250;
+
+	function t(x,ss){
+		movex=1,movey=1;
+		scale=ss;
+		var f=x;
+		// In order
+		//    5
+		//  1 3 4
+		//    2
+		offset=[{x: -1/3, y: 0.0, factor: f, color: "#FFFFFF", weight: 1},
+			{x: 0.0, y: -1/3, factor: f, color: "#FFFFFF", weight: 1},
+			{x: 0.0, y: 0.0, factor: f, color: "#FFFFFF", weight: 1}, 
+			{x: 1/3, y: 0.0, factor: f, color: "#FFFFFF", weight: 1},
+			{x: 0.0, y: 1/3, factor: f, color: "#FFFFFF", weight: 1}];
+		return f-0.001;
+	}
+	function clear(){
+		ctx.fillStyle = "#000000";
+		ctx.fillRect(0,0,1000,1000);
+	}
+	function selfsimilar(){
+		var x=Math.random(),y=Math.random();
+
+		var tw=0;
+		for(var j=0;j<offset.length;j++){
+			tw+=offset[j].weight;
+		}
+		for(var i=0;i<16384;i++){
+			var weight=Math.floor(tw*Math.random());
+			var choice=0;
+			var w=0;
+			for(var j=0;j<offset.length;j++){
+				if(weight >= w){
+					choice=j;
+					w+=offset[j].weight;
+				}
+			}
+			x=x*offset[choice].factor+offset[choice].x;
+			y=y*offset[choice].factor+offset[choice].y;
+			if(i > 2){
+				ctx.fillStyle = offset[choice].color;
+				ctx.fillRect((x+movex)*scale,(y+movey)*scale,1,1);
+			}
+		}
+	}
+	function combined(x){
+		bf=t(x,sc);
+		clear();
+		selfsimilar();
+	}
+	var check = function(){
+		console.log(Date());
+		combined(bf);
+		if(bf > 0.005){
+			setTimeout(check,100);
+		}
+	}
+	check();
+</script>
+</body>
+</html>
